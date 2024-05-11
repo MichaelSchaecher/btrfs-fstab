@@ -1,0 +1,39 @@
+#!/bin/env bash
+
+# Copyright (C) 2024 by Michael L. Schaecher under the MIT License.
+
+# This script is disigned to generate a /etc/fstab file for a Linux system.
+#
+# Requirements:
+# 1. ext4, xfs, or btrfs filesystems
+# 2. EFI only boot partition
+# 3. For btrfs filesystems subvolumes are required.
+
+progVersion="0.1.0"
+progName="fstab-gen"
+
+fstype="btrfs"
+btrfsOptions="ssd,noatime,space_cache=v2,compress=lzo"
+
+mountby="UUID"
+
+findRootFS="$(awk '$2 == "/" {print $1}' /proc/mounts)"
+
+getRootFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID ${findRootFS})"
+getBootFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID | grep -w "/boot/efi" | awk '{print $1}')"
+getSwapFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID | grep -w "[SWAP]" | awk '{print $1}')"
+
+subvolumeList="$(btrfs su list /)"
+
+cat <<EOF > /etc/fstab
+# /etc/fstab: static file system information.
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+UUID=${getbootFS} /boot/efi vfat defaults 0 2
+EOF
+
+for su in ${subvolumeList}; do
+    echo "UUID=${getRootFS} / btrfs ${btrfsOptions},subvol=${su} 0 0" >> /etc/fstab
+done
+
+echo "UUID=${getSwapFS} none swap defaults 0 0" >> /etc/fstab
