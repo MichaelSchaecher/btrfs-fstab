@@ -1,15 +1,5 @@
 #!/bin/env bash
 
-# Copyright (C) 2024 by Michael L. Schaecher under the MIT License.
-
-# This script is designed to generate a /etc/fstab file for a Linux system.
-#
-# Requirements:
-# 1. btrfs
-# 2. EFI only boot partition
-# 3. Subvolumes are required following the guide on https://blackstewie.com
-#    regarding how to install Ubuntu 24.04 with btrfs.
-
 function subvol () {
 	for su in $(btrfs su list / | grep 'level 5' | awk '{print $9}'); do
 
@@ -20,35 +10,32 @@ function subvol () {
 	    if test "$su" = "@cache" ; then mountAt="/var/cache" ; fi
 	    if test "$su" = "@snapshots" ; then mountAt="/.snapshots" ; fi
 
-	    echo "UUID=${getRootFS} $mountAt btrfs ${btrfsOptions},subvol=${su} 0 0"
+	    echo "${getRootFS} $mountAt btrfs ${btrfsOptions},subvol=${su} 0 0"
 	done
 }
 
-fstype="btrfs"
 btrfsOptions="ssd,noatime,space_cache=v2,compress=lzo"
 
-mountby="UUID"
+getBootFS="$(cat /etc/fstab | grep "vfat" | awk '{print $1}')"
+getRootFS="$(cat /etc/fstab | grep "/ btrfs" | awk '{print $1}')"
+getSwapFS="$(cat /etc/fstab | grep "swap" | awk '{print $1}')"
 
-findRootFS="$(awk '$2 == "/" {print $1}' /proc/mounts)"
-
-getRootFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID ${findRootFS} | awk '{print $4}')"
-getBootFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID | grep "/boot/efi" | awk '{print $4}')"
-getSwapFS="$(lsblk -no NAME,FSTYPE,MOUNTPOINT,UUID | grep "swap" | awk '{print $4}')"
-
-cat <<EOF > fstab
+cat <<EOF > /etc/fstab
 # /etc/fstab: static file system information.
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 
 # EFI boot partition
-UUID=${getBootFS} /boot/efi vfat defaults 0 1
+${getBootFS} /boot/efi vfat defaults 0 1
 
 # Mount btrfs subvolumes
 $(subvol)
 
 # Swap
-UUID=${getSwapFS} none swap defaults 0 0
+${getSwapFS} none swap defaults 0 0
 EOF
+
+exit 0
 
 exit 0
 
