@@ -16,9 +16,9 @@ function subvol () {
 
 btrfsOptions="ssd,noatime,space_cache=v2,compress=lzo"
 
-getBootFS="$(cat /etc/fstab | grep "vfat" | awk '{print $1}')"
-getRootFS="$(cat /etc/fstab | grep "/ btrfs" | awk '{print $1}')"
-getSwapFS="$(cat /etc/fstab | grep "swap" | awk '{print $1}')"
+getBootFS="$(cat /etc/fstab | grep 'vfat' | awk '{print $1}')"
+getRootFS="$(cat /etc/fstab | grep '/.*btrfs' | awk '{print $1}')"
+getSwapFS="$(cat /etc/fstab | grep 'swap' | awk '{print $1}')"
 
 cat <<EOF > /etc/fstab
 # /etc/fstab: static file system information.
@@ -36,6 +36,3 @@ ${getSwapFS} none swap defaults 0 0
 EOF
 
 exit 0
-
-exit 0
-
