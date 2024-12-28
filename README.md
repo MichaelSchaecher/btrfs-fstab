@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
   <h1
     style="font-size: 3rem; font-weight: bold; color: rgb(108, 108, 108);"
     >Gen FSTab</h1>
