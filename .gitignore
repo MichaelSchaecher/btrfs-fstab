@@ -1,0 +1,12 @@
+.vscode/
+
+build/
+
+*.gz
+*.xz
+*.deb
+*.tar
+package/DEBIAN/control
+package/DEBIAN/changelog
+version
+md5sums
