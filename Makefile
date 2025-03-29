@@ -28,14 +28,13 @@ debian:
 
 	@echo "$(VERSION)" > $(PACKAGE_DIR)/usr/share/doc/$(PACKAGE)/version
 
-	@scripts/set-control
-	@scripts/sum
-
 	@dpkg-changelog $(PACKAGE_DIR)/DEBIAN/changelog
 	@dpkg-changelog $(PACKAGE_DIR)/usr/share/doc/$(PACKAGE)/changelog
 	@gzip -d $(PACKAGE_DIR)/DEBIAN/*.gz
 	@mv $(PACKAGE_DIR)/DEBIAN/changelog.DEBIAN $(PACKAGE_DIR)/DEBIAN/changelog
 
+	@scripts/set-control
+	@scripts/sum
 	@scripts/mkdeb
 
 install:

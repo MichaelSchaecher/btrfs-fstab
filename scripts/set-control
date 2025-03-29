@@ -13,7 +13,7 @@ if test -d "${PACKAGE_DIR}/var" ; then sizeVAR=$(du -s "${PACKAGE_DIR}/var" | cu
 
 totalSize=$((sizeUSR + sizeETC + sizeVAR))
 
-cat <<EOF > ${PACKAGE_DIR}/DEBIAN/control
+cat <<EOF > "${PACKAGE_DIR}/DEBIAN/control"
 Package: ${PACKAGE}
 Version: ${VERSION}
 Section: utils
@@ -23,7 +23,6 @@ Installed-Size: ${totalSize}
 Homepage: ${HOMEPAGE}
 Architecture: amd64
 Depends: ${INSTALL}
-Conflicts: ${CONFLICTS}
 Build-Depends: ${BUILD}
 Description: Generate fstab file for btrfs subvolumes
 EOF
