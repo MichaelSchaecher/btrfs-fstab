@@ -3,13 +3,13 @@
 set -e
 
 # shellcheck disable=SC2046
-if test -d "../../apt-repo" ; then
+if test -d "../../mls" ; then
 
-	test -d ../../apt-repo/pool/main/b/"${PACKAGE}" || mkdir -vp ../../apt-repo/pool/main/b/"${PACKAGE}"
+	test -d ../../mls/pool/main/b/"${PACKAGE}" || mkdir -vp ../../mls/pool/main/b/"${PACKAGE}"
 
-    rm -vf ../../apt-repo/pool/main/b/"${PACKAGE}"/*.deb
+    rm -vf ../../mls/pool/main/b/"${PACKAGE}"/*.deb
 	dpkg-deb --root-owner-group --build "${PACKAGE_DIR}" \
-		"../../apt-repo/pool/main/b/${PACKAGE}/${PACKAGE}_${VERSION}_${ARCH}.deb"
+		"../../mls/pool/main/b/${PACKAGE}/${PACKAGE}_${VERSION}_${ARCH}.deb"
 
 else
 	dpkg-deb --root-owner-group --build "${PACKAGE_DIR}" "${PACKAGE}_${VERSION}_${ARCH}.deb"
