@@ -23,6 +23,17 @@ function subvol () {
 	done
 }
 
+version="$(cat /usr/share/doc/btrfs-fstab/version || echo "unknown")"
+
+versionInfo="$(cat <<EOF
+btrfs-fstab - [VERSION] ${version} - $(date +%Y-%m-%d)
+EOF
+)"
+
+case "${1}" in
+	-v|--version			) echo "${versionInfo}" ; exit 0 ;;
+esac
+
 test "$(id -u)" -eq 0 || { echo "You must be root to run this script"; exit 1; }
 
 # Test if I'm running in a chroot environment using /proc directory.
