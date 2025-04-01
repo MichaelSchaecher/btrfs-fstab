@@ -33,6 +33,10 @@ wget -qO - https://raw.githubusercontent.com/MichaelSchaecher/mls/refs/heads/mai
 gpg --dearmor | sudo dd of=/usr/share/keyrings/HowToNebie.gpg
 ```
 
+Update the package list and install: `sudo apt update` & `sudo apt install btrfs-fstab`
+
+
+
 ### Other Linux Distributions
 
 Installing the project is straightforward. Follow these steps:
@@ -40,7 +44,7 @@ Installing the project is straightforward. Follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/MichaelMure/btrfs-snapshot.git
+   git clone https://github.com/MichaelMure/btrfs-fstab.git
    ```
 
 2. Install the project:
