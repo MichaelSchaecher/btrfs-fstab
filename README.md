@@ -15,11 +15,39 @@ This script fixes the main issue that I have with Ubuntu and most distro's that 
 
 ## Installation
 
-The easiest way to install application is the following the steps [here](https://michaelschaecher.github.io/mls/) to add the repository and install the package.
+### Using DPKG/APT
 
-### Alternative Installation
+You can install the project using the following command on Debian/Ubuntu based distributions add the repository.
 
-Is to clone the repository and run the following commands: `make debian && sudo make install`.
+Add the source list:
+
+```bash
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/HowToNebie.gpg] https://michaelschaecher.github.io/mls stable main" |
+sudo tee /etc/apt/sources.list.d/howtonebie.list
+```
+
+Add the repository key:
+
+```bash
+wget -qO - https://raw.githubusercontent.com/MichaelSchaecher/mls/refs/heads/main/key/HowToNebie.gpg |
+gpg --dearmor | sudo dd of=/usr/share/keyrings/HowToNebie.gpg
+```
+
+### Other Linux Distributions
+
+Installing the project is straightforward. Follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/MichaelMure/btrfs-snapshot.git
+   ```
+
+2. Install the project:
+
+   ```bash
+   sudo make install
+   ```
 
 ## Usage
 
