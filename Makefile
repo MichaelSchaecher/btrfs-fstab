@@ -22,10 +22,10 @@ LONG_DESCRIPTION = Us for creating a fstab file for BTRFS filesystems with multi
 export PACKAGE VERSION MAINTAINER INSTALL BUILD HOMEPAGE ARCH PACKAGE_DIR WORKING_DIR DESCRIPTION LONG_DESCRIPTION
 
 # Phony targets
-.PHONY: all debian clean help
+.PHONY: all debian install clean help
 
 # Default target
-all: debian
+all: install
 
 debian:
 
@@ -55,7 +55,13 @@ endif
 
 install:
 
-	@dpkg -i $(PACKAGE)_$(VERSION)_$(ARCH).deb
+	@if test "$(shell id -u)" != "0"; then \
+		echo "This target requires root privileges. Please run as root or use sudo."; \
+		exit 1; \
+	fi
+
+	@cp -av $(PACKAGE_DIR)/usr /usr
+	@echo "$(VERSION)" > /usr/share/doc/$(PACKAGE)/version
 
 clean:
 	@rm -vf $(PACKAGE_DIR)/DEBIAN/control \
@@ -68,9 +74,11 @@ help:
 	@echo "Usage: make [target] <variables>"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all       - Build the debian package and install it"
-	@echo "  debian    - Build the debian package"
-	@echo "  install   - Install the debian package"
-	@echo "  clean     - Clean up build files"
-	@echo "  help      - Display this help message"
+	@echo "  all       		- Default target (basic install)"
+	@echo "  debian    		- Build the debian package"
+	@echo "  install   		- Install the basic file (requires root privileges)"
+	@echo "  clean     		- Clean up build files"
+	@echo "  help      		- Display this help message"
 	@echo ""
+	@echo "Variables:"
+	@echo "  FORCE_DEB		- (Default=no) yes = force build debian package even if it exists"	@echo "
