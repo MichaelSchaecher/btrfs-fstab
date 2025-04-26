@@ -3,7 +3,7 @@
 set -eo pipefail
 
 # Calculate the sum of the files that are to be installed
-cd "${PACKAGE_DIR}"
+cd "${BUILD_DIR}"
 
 if test -f "DEBIAN/md5sums"; then rm "DEBIAN/md5sums" ; fi
 

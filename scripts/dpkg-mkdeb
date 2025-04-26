@@ -14,12 +14,12 @@ test -n "${ARCH}" || { echo "ARCH not set"; exit 1; }
 test -d "${poolDir}/d/${PACKAGE}" || mkdir -p "${poolDir}/d/${PACKAGE}"
 
 case "${1}" in
-	-f|--force)
-		rm -vf ${poolDir}/b/"${PACKAGE}"/*.deb
-		;;
+	-f|--force          ) rm -vf ${poolDir}/b/"${PACKAGE}"/*.deb ;;
+    *                   ) existingDeb=$(find "${poolDir}/d/${PACKAGE}/" -type f -name "*.deb")
 esac
 
-existingDeb=$(find "${poolDir}/b/${PACKAGE}/" -type f -name "*.deb")
+# Get the most recent commit hash
+commitHash=$(git rev-parse --short HEAD)
 
 # Exit without error if a any deb file already exists
 if test -n "${existingDeb}"; then
@@ -27,7 +27,8 @@ if test -n "${existingDeb}"; then
 	exit 0
 else
 	echo "Creating deb file"
-	dpkg-deb --build --root-owner-group package "${poolDir}/b/${PACKAGE}/${PACKAGE}_${VERSION}_${ARCH}.deb"
+	dpkg-deb --build --root-owner-group ${BUILD_DIR} \
+        "${poolDir}/b/${PACKAGE}/${PACKAGE}_${VERSION}-${commitHash}_${ARCH}.deb"
 fi
 
 exit 0
