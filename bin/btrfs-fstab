@@ -1,11 +1,21 @@
 #!/bin/env bash
 
-# Copyright (C) 2024 by Michael Schaecher <mschaecher78@gmail.com> under the MIT License
+# btrfs-fstab - Generate fstab file for btrfs subvolumes
 
-# This script generates /etc/fstab file for Ubuntu installation with btrfs filesystem
-# that uses none Ubuntu default subvolumes.
-#
-# Gen-FSTab script assumes that system has EFI boot partition.
+#	Copyright (C) 2024  Michael Schaecher <michaelleeschaecher@gmail.com>
+
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 function subvol () {
 	for su in $(btrfs su list "/${mountPoint}" | grep 'level 5' | awk '{print $9}'); do
