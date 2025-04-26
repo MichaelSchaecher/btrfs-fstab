@@ -20,6 +20,7 @@
 function subvol () {
 	for su in $(btrfs su list "/${mountPoint}" | grep 'level 5' | awk '{print $9}'); do
 
+		# Check the current subvolume are mounted.
 		test -n "$su" || { echo "No subvolumes found"; exit 1; }
 
 	    test "$su" = "root"      || test "${su}" = "@"          && mountAt="/"
