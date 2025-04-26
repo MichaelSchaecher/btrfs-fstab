@@ -5,7 +5,7 @@ Priority: optional
 Maintainer:
 Installed-Size:
 Homepage:
-Architecture:
+Architecture: amd64
 Depends: btrfs-progs (>= 4.0), util-linux (>= 2.20)
 Recommends:
 Conflicts:
