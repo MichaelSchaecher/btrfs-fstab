@@ -1,0 +1,16 @@
+Package: btrfs-fstab
+Version:
+Section: utils
+Priority: optional
+Maintainer:
+Installed-Size:
+Homepage:
+Architecture:
+Depends: btrfs-progs (>= 4.0), util-linux (>= 2.20)
+Recommends:
+Conflicts:
+Build-Depends: dpkg-dev (>= 1.0.0), debhelper (>= 9), dpkg-craft (>= 0.5.0)
+Description: Generate fstab entries for btrfs subvolumes
+  This package provides a script to generate fstab entries for btrfs
+  subvolumes for customized Ubuntu installations that use btrfs as the
+  root filesystem.
