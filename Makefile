@@ -1,56 +1,75 @@
 #!/bin/env make -f
 
+# NOTE: The use of the Make command is well change in the future, going with a
+# more intuitive build system once it is completed. Removing the need for the
+# use of messy helper shell scripts.
+
 PACKAGE = $(shell basename $(shell pwd))
-VERSION = $(shell bash scripts/set-version)
+VERSION = $(shell dpkg-version)
 
 MAINTAINER = $(shell git config user.name) <$(shell git config user.email)>
 
 INSTALL = dpkg-dev, git
 BUILD = debhelper (>= 11), git, make (>= 4.1), dpkg-dev
 
-HOMEPAGE = https://github.com/MichaelSchaecher/ddns
+HOMEPAGE = https:\/\/github.com\/MichaelSchaecher\/$(PACKAGE)
 
 ARCH = $(shell dpkg --print-architecture)
 
-PACKAGE_DIR = package
-
 WORKING_DIR = $(shell pwd)
+BUILD_DIR = $(WORKING_DIR)/build
 
-DESCRIPTION = Generate a fstab file for BTRFS subvolumes -
-LONG_DESCRIPTION = Us for creating a fstab file for BTRFS filesystems with multiple subvolumes.
-
-export PACKAGE VERSION MAINTAINER INSTALL BUILD HOMEPAGE ARCH PACKAGE_DIR WORKING_DIR DESCRIPTION LONG_DESCRIPTION
+export PACKAGE VERSION MAINTAINER INSTALL BUILD HOMEPAGE ARCH BUILD_DIR WORKING_DIR
 
 # Phony targets
 .PHONY: all debian install clean help
+
+FORCE_DEB := yes
 
 # Default target
 all: install
 
 debian:
 
+	@mkdir -vp $(BUILD_DIR)/DEBIAN \
+		$(BUILD_DIR)/usr/share/doc/$(PACKAGE) \
+		$(BUILD_DIR)/usr/bin \
+
+	@cp -av $(WORKING_DIR)/debian/* $(BUILD_DIR)/DEBIAN/
+
+	@sed -i 's/Version:/Version: $(VERSION)/' \
+		$(BUILD_DIR)/DEBIAN/control
+
+	@sed -i 's/Maintainer:/Maintainer: $(MAINTAINER)/' \
+		$(BUILD_DIR)/DEBIAN/control
+
+	@sed -i 's/Homepage:/Homepage: $(HOMEPAGE)/' \
+		$(BUILD_DIR)/DEBIAN/control
+
 	@echo "Building package $(PACKAGE) version $(VERSION)"
 
-	@echo "$(VERSION)" > $(PACKAGE_DIR)/usr/share/doc/$(PACKAGE)/version
+	@echo "$(VERSION)" > $(BUILD_DIR)/usr/share/doc/$(PACKAGE)/version
 
-# ifeq ($(MANPAGE),yes)
-# 	@pandoc -s -t man man/$(PACKAGE).8.md -o \
-# 		$(PACKAGE_DIR)/usr/share/man/man8/$(PACKAGE).8
-# 	@gzip --best -nvf $(PACKAGE_DIR)/usr/share/man/man8/$(PACKAGE).8
-# endif
+ifeq ($(MANPAGE),yes)
+	@pandoc -s -t man man/$(PACKAGE).8.md -o \
+		$(BUILD_DIR)/usr/share/man/man8/$(PACKAGE).8
+	@gzip --best -nvf $(BUILD_DIR)/usr/share/man/man8/$(PACKAGE).8
+endif
 
-	@dpkg-changelog $(PACKAGE_DIR)/DEBIAN/changelog
-	@dpkg-changelog $(PACKAGE_DIR)/usr/share/doc/$(PACKAGE)/changelog
-	@gzip -d $(PACKAGE_DIR)/DEBIAN/*.gz
-	@mv $(PACKAGE_DIR)/DEBIAN/changelog.DEBIAN $(PACKAGE_DIR)/DEBIAN/changelog
+# TODO: Change this to use the correct command once available.
+	@dpkg-changelog
 
-	@scripts/set-control
-	@scripts/gen-chsums
+	@cp -av $(WORKING_DIR)/doc/* $(BUILD_DIR)/usr/share/doc/$(PACKAGE)/
+	@cp -av bin/$(PACKAGE) $(BUILD_DIR)/usr/bin/$(PACKAGE)
+	@chmod 755 $(BUILD_DIR)/usr/bin/$(PACKAGE)
+
+	@scripts/dpkg-size
+	@scripts/dpkg-chsums
 
 ifeq ($(FORCE_DEB),yes)
-	@scripts/mkdeb --force
+	@scripts/dpkg-mkdeb --force
 else
-	@scripts/mkdeb
+	@scripts/dpkg-mkdeb
 endif
 
 install:
@@ -60,15 +79,11 @@ install:
 		exit 1; \
 	fi
 
-	@cp -av $(PACKAGE_DIR)/usr /usr
+	@cp -av $(BUILD_DIR)/usr /usr
 	@echo "$(VERSION)" > /usr/share/doc/$(PACKAGE)/version
 
 clean:
-	@rm -vf $(PACKAGE_DIR)/DEBIAN/control \
-		$(PACKAGE_DIR)/DEBIAN/changelog \
-		$(PACKAGE_DIR)/DEBIAN/md5sums \
-		$(PACKAGE_DIR)/usr/share/doc/$(PACKAGE)/*.gz \
-		$(PACKAGE_DIR)/usr/share/man/man8/$(PACKAGE).8.gz \
+	@rm -rvf $(BUILD_DIR)
 
 help:
 	@echo "Usage: make [target] <variables>"
